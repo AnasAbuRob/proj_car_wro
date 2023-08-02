@@ -20,7 +20,6 @@ def calculate_color_area(lower_color_range, upper_color_range):
             cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
             cv2.putText(frame, "DETECT", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
-            # حساب مساحة اللون المحدد
             color_area += cv2.countNonZero(mask[y:y+h, x:x+w])
 
     cv2.imshow("FRAME", frame)
@@ -28,25 +27,3 @@ def calculate_color_area(lower_color_range, upper_color_range):
     cap.release()
     cv2.destroyAllWindows()
     return color_area
-
-# if __name__ == "__main__":
-#     # تعريف نطاق اللون الأحمر
-#     lower_red = np.array([9, 197, 139])
-#     upper_red = np.array([178, 255, 192])
-
-#     # تعريف نطاق اللون الأخضر
-#     lower_green = np.array([62, 101, 87])
-#     upper_green = np.array([100, 253, 227])
-
-#     # حساب مساحة اللون الأحمر والأخضر
-#     red_area = calculate_color_area(lower_red, upper_red)
-#     green_area = calculate_color_area(lower_green, upper_green)
-
-#     if red_area > green_area:
-#         print("مساحة اللون الأحمر أكبر من الأخضر.")
-#         print("مساحة اللون الأحمر:", red_area, "بكسل")
-#     elif green_area > red_area:
-#         print("مساحة اللون الأخضر أكبر من الأحمر.")
-#         print("مساحة اللون الأخضر:", green_area, "بكسل")
-#     else:
-#         print("مساحة اللون الأحمر والأخضر متساوية.")
