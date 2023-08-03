@@ -1,6 +1,6 @@
 import serial
 import time
-import red_green
+import t2_red_green_python
 import numpy as np
 ser=serial.Serial("COM4",9600,timeout=1.0)
 time.sleep(3)
@@ -19,8 +19,8 @@ try:
             lower_green = np.array([62, 101, 87])
             upper_green = np.array([100, 253, 227])
 
-            red_area = red_green.calculate_color_area(lower_red, upper_red)
-            green_area = red_green.calculate_color_area(lower_green, upper_green)
+            red_area = t2_red_green_python.calculate_color_area(lower_red, upper_red)
+            green_area = t2_red_green_python.calculate_color_area(lower_green, upper_green)
             
             if red_area > green_area:
                 ser.write("red".encode('utf-8'))
