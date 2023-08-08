@@ -2,33 +2,36 @@
 
 Servo myservo;
 
-const byte echo_b=33;
-const byte trig_b=32;
-const byte echo_f=41;
-const byte trig_f=40;
-const byte echo_r=37;
-const byte trig_r=36;
-const byte echo_l=35;
-const byte trig_l=34;
+const byte echo_b = 33;
+const byte trig_b = 32;
+const byte echo_f = 41;
+const byte trig_f = 40;
+const byte echo_r = 37;
+const byte trig_r = 36;
+const byte echo_l = 35;
+const byte trig_l = 34;
 
 const byte motor_f = 6;
 const byte motor_b = 7;
 const byte motor_s = 9;
 const byte servo = 10;
 int counter_rotate = 0;
-const byte start_Stop=3;
+const byte start_Stop = 3;
+int right1;
+int left1;
+int c=0;
 
 
 
 void stopProgram() {
-    
 
-      digitalWrite(motor_f, LOW);
-      digitalWrite(motor_b, LOW);
-      counter_rotate=0;
-      myservo.write(38);
-   
-    
+
+  digitalWrite(motor_f, LOW);
+  digitalWrite(motor_b, LOW);
+  myservo.write(38);
+
+
+
 }
 
 int get_destance(int pin_Trig, int pin_Echo)
@@ -47,92 +50,132 @@ int get_destance(int pin_Trig, int pin_Echo)
 
 
 }
-void obstacles()
-{if (get_destance(trig_f, echo_f)<15)
-          {
-            digitalWrite(motor_f, LOW);
-              delay(20);
-            if (get_destance(trig_r, echo_r)>get_destance(trig_l, echo_l))
-            {
-              
-              myservo.write(0);
-              delay(100);
-              digitalWrite(motor_b, HIGH);
-              delay(2000);
-               myservo.write(90);
-               delay(100);
-               digitalWrite(motor_f, HIGH);
-               delay(1500);
-               myservo.write(38);
-                delay(100);
-               digitalWrite(motor_f,HIGH);
-               
-               
-              
-              
-            
-            
-           
-          }
+
+void Correct_path()
+{
+  int right2=get_destance(trig_r, echo_r);
+  int left2=get_destance(trig_l, echo_l);
+  int forword=get_destance(trig_f, echo_f);
+ 
+  if ((right2+left2)<120){
+    if ((right1-right2)>5 || (left1-left2<-5 ))
+        {
+          myservo.write(25);
+          delay(100);
+           myservo.write(38);
+           delay(15);
           
-           else
-          {
-            myservo.write(90);
-              delay(100);
-              digitalWrite(motor_b, HIGH);
-              delay(1500);
-               myservo.write(0);
-               delay(100);
-               digitalWrite(motor_f, HIGH);
-               delay(1500);
-               myservo.write(38);
-                delay(100);
-               digitalWrite(motor_f,HIGH);
-            
-          }
-          }
+        }
+        else if ((right1-right2)<-5 || (left1-left2>5))
+        {
+          myservo.write(51);
+          delay(100);
+           myservo.write(38);
+           delay(15);
+        }
+        if (forword<=70)
+        {
+          right_or_left();
+          
+        }
+       
+    
+  
+
 }
+}
+
+
 void right_or_left()
 {
-  int right=get_destance(trig_r, echo_r);
-  delay(2);
-  int left=get_destance(trig_l, echo_l);
-  delay(2);
-  int forward=get_destance(trig_f, echo_f);
-  delay(2);
-  if ( forward< 40)
-  {
- 
-    if (( right+left ) > 200)
-    {
+  int right = get_destance(trig_r, echo_r);
+  int left = get_destance(trig_l, echo_l);
+  int forward = get_destance(trig_f, echo_f);
+
+    if (( right + left ) > 200)
+    {  
       if (left > right)
       { 
-          myservo.write(0);
-          delay(1500);
-          myservo.write(38);
-  }
-      
+        if (forward < 20)
+       
+        {digitalWrite(motor_f,LOW);
+         delay(15);
+         digitalWrite(motor_b,HIGH);
+          analogWrite(motor_s,100);
+         delay(1500);
+         digitalWrite(motor_b,LOW);
+         delay(15);
+         digitalWrite(motor_f,HIGH);
+          analogWrite(motor_s,100);
+          delay(500);
+          analogWrite(motor_s,85);
+          
+         
+         
+      }
+          
+        
+        myservo.write(0);
+         analogWrite(motor_s,100);
+
+        delay(1500);
+        
+        myservo.write(38);
+        delay(400);
+        analogWrite(motor_s,85);
+        
+        
+       
+
+        
+  
+          
+      }
+
 
       else if (left < right)
       {
+               if (forward < 20)
        
-          myservo.write(90);
-          
+        {digitalWrite(motor_f,LOW);
+         delay(15);
+         digitalWrite(motor_b,HIGH);
+          analogWrite(motor_s, 100);
+         delay(500);
+         digitalWrite(motor_b,LOW);
+         delay(15);
+          analogWrite(motor_s, 85);
+         digitalWrite(motor_f,HIGH);
+         analogWrite(motor_s,100);
+          delay(300);
+          analogWrite(motor_s,85);
+         
+         
+         
+      }
+
+        myservo.write(90);
+        analogWrite(motor_s,100);
+
         delay(1500);
-         myservo.write(38);
- 
-          
-    
-      
-        }
+        
+        myservo.write(38);
+        delay(400);
+        analogWrite(motor_s,85);
         
 
 
+
+
       }
-       
-      counter_rotate += 1;
+
+
+
     }
+  
+    counter_rotate += 1;
   }
+
 
 
 
@@ -145,7 +188,7 @@ void setup() {
   pinMode(motor_f, OUTPUT);
   pinMode(motor_b, OUTPUT);
   pinMode(motor_s, OUTPUT);
-  analogWrite(motor_s, 100);
+  analogWrite(motor_s, 90);
   myservo.attach(servo);
   myservo.write(38);
 
@@ -159,45 +202,64 @@ void setup() {
   pinMode(echo_b, INPUT);
   pinMode(start_Stop, INPUT_PULLUP);
   Serial.begin(9600);
+ 
 
 }
 
 
 void loop() {
-  
-    if(digitalRead(start_Stop)==0)
-    {   if (counter_rotate < 12)
-      {
-  
-      digitalWrite(motor_f, HIGH);
-      delay(100);
-      obstacles();
-      right_or_left();
-      obstacles();
+
+  if (digitalRead(start_Stop) == 0)
+
+  { if (counter_rotate < 12)
+    {
+      if (c==0){
+           right1= get_destance(trig_r, echo_r);
+            left1 = get_destance(trig_l, echo_l);
+            c+=1;
+      }
+      digitalWrite(motor_f,HIGH);
+     right_or_left();
+     Correct_path();
      
-      if(digitalRead(start_Stop)==1)
+      
+
+      if (digitalRead(start_Stop) == 1)
       {
-      stopProgram();
+        
+        stopProgram();
+      
       }
-    
-   
-           
-      }
-      else{
+
+
+
+    }
+    else {
 
       stopProgram();
-   
-    }
-    }
-  
-    else{
+      if (digitalRead(start_Stop) == 0)
+      {
+        counter_rotate=0;
+        
+      }
+        
 
-      stopProgram();
-   
     }
-          
-  
-  
+  }
+
+  else {
+
+    stopProgram();
+      if (digitalRead(start_Stop) == 0)
+      {
+        counter_rotate=0;
+        
+      }
+
+  }
+
+
+
 
 
 
