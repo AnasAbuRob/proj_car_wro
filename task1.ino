@@ -17,19 +17,21 @@ const byte motor_s = 9;
 const byte servo = 10;
 int counter_rotate = 0;
 const byte start_Stop = 3;
-int right1;
-int left1;
+long wait=0;
 int c=0;
+const byte ir_right=18;
+const byte ir_left=19;
+long ir_turn=0;
+
 
 
 
 void stopProgram() {
 
 
-  digitalWrite(motor_f, LOW);
-  digitalWrite(motor_b, LOW);
-  myservo.write(38);
-
+    digitalWrite(motor_f, LOW);
+    digitalWrite(motor_b, LOW);
+    myservo.write(38);
 
 
 }
@@ -53,38 +55,187 @@ int get_destance(int pin_Trig, int pin_Echo)
 
 void Correct_path()
 {
-  int right2=get_destance(trig_r, echo_r);
-  int left2=get_destance(trig_l, echo_l);
+  int right=get_destance(trig_r, echo_r);
+  int left=get_destance(trig_l, echo_l);
   int forword=get_destance(trig_f, echo_f);
- 
-  if ((right2+left2)<120){
-    if ((right1-right2)>5 || (left1-left2<-5 ))
-        {
-          myservo.write(25);
-          delay(100);
-           myservo.write(38);
-           delay(15);
-          
-        }
-        else if ((right1-right2)<-5 || (left1-left2>5))
-        {
-          myservo.write(51);
-          delay(100);
-           myservo.write(38);
-           delay(15);
-        }
-        if (forword<=70)
-        {
-          right_or_left();
-          
-        }
-       
-    
+  int center=(right+left)/2;
+  if(forword>40)
+  { 
+  if (center>right+5 && abs (center-right)<80)
+    {
+       myservo.write(23);
+       wait=millis();
+       while(millis()-wait<1000)
+          {
+            right=get_destance(trig_r, echo_r);
+            left=get_destance(trig_l, echo_l);
+            center=(right+left)/2;
+            
+            if (center<right && abs (center-right)<80) 
+            {
+              myservo.write(38);
+              break;
+              
+              
+            }
+            if (digitalRead(ir_right)==0)
+            {
+              myservo.write(38);
+             digitalWrite(motor_f,LOW);
+             delay(15);
+             digitalWrite(motor_b,HIGH);
+              analogWrite(motor_s,100);
+             ir_turn=millis();
+             while(millis()-ir_turn<1000)
+             {        
+             }
+             digitalWrite(motor_b,LOW);
+             myservo.write(23);
+             delay(15);
+             digitalWrite(motor_f,HIGH);
+             ir_turn=millis();
+             while(millis()-ir_turn<700)
+             {
+              forword=get_destance(trig_f, echo_f);
+              if ( forword<20)
+              {
+                break;     
+              }
+             }
+              analogWrite(motor_s,85);
+              myservo.write(38);
+            }
+            if (digitalRead(ir_left)==0)
+            {
+               myservo.write(38);
+               digitalWrite(motor_f,LOW);
+             delay(15);
+             digitalWrite(motor_b,HIGH);
+              analogWrite(motor_s,100);
+             ir_turn=millis();
+             while(millis()-ir_turn<1000)
+             {
+              }
+             digitalWrite(motor_b,LOW);
+             myservo.write(53);
+             delay(15);
+             digitalWrite(motor_f,HIGH);
+             ir_turn=millis();
+             while(millis()-ir_turn<700)
+             {
+              forword=get_destance(trig_f, echo_f);
+              if ( forword<20)
+              {
+                break;     
+              }
+             }
+              analogWrite(motor_s,85);
+              myservo.write(38);
+            }
+            
+            forword=get_destance(trig_f, echo_f);
+            if (forword<20)
+            {
+              myservo.write(38);
+              break;
+            }
+            
+          }
+      
+    }
+    else if (center>left+5 && abs (center-left)<80)
+    {
+       myservo.write(58);
+       wait=millis();
+       while(millis()-wait<1000)
+          {
+            right=get_destance(trig_r, echo_r);
+            left=get_destance(trig_l, echo_l);
+            center=(right+left)/2;
+            if (center<left && abs (center-left)<80) 
+            {
+              myservo.write(38);
+              break;
+              
+            }
+             if (digitalRead(ir_right)==0)
+            {
+              myservo.write(38);
+             digitalWrite(motor_f,LOW);
+             delay(15);
+             digitalWrite(motor_b,HIGH);
+              analogWrite(motor_s,100);
+             ir_turn=millis();
+             while(millis()-ir_turn<1000)
+             {
+             }
+             digitalWrite(motor_b,LOW);
+             delay(15);
+             digitalWrite(motor_f,HIGH);
+             myservo.write(18);
+             ir_turn=millis();
+             while(millis()-ir_turn<700)
+             {
+              forword=get_destance(trig_f, echo_f);
+              if ( forword<20)
+              {
+                break;     
+              }
+             }
+              analogWrite(motor_s,85);
+              myservo.write(38);
+            }
+            if (digitalRead(ir_left)==0)
+            {
+               digitalWrite(motor_f,LOW);
+             delay(15);
+             digitalWrite(motor_b,HIGH);
+              analogWrite(motor_s,100);
+             ir_turn=millis();
+             while(millis()-ir_turn<700)
+             {
+             }
+             digitalWrite(motor_b,LOW);
+             delay(15);
+             digitalWrite(motor_f,HIGH);
+             myservo.write(60);
+             ir_turn=millis();
+             while(millis()-ir_turn<700)
+             {
+              forword=get_destance(trig_f, echo_f);
+              if ( forword<20)
+              {
+                break;     
+              }
+             }
+              analogWrite(motor_s,85);
+              myservo.write(38);
+            }
+            forword=get_destance(trig_f, echo_f);
+            if (forword<20)
+            {
+              myservo.write(38);
+               digitalWrite(motor_f,LOW);
+             delay(15);
+             digitalWrite(motor_b,HIGH);
+              analogWrite(motor_s,100);
+             ir_turn=millis();
+             while(millis()-ir_turn<1000)
+             {        
+             }
+             digitalWrite(motor_b,LOW);
+              break;
+            }
+            
+          }
+      
+    }
   
-
+  
+ 
+  
 }
 }
-
 
 void right_or_left()
 {
@@ -102,13 +253,12 @@ void right_or_left()
          delay(15);
          digitalWrite(motor_b,HIGH);
           analogWrite(motor_s,100);
-         delay(1500);
+         delay(1000);
          digitalWrite(motor_b,LOW);
          delay(15);
          digitalWrite(motor_f,HIGH);
-          analogWrite(motor_s,100);
-          delay(500);
           analogWrite(motor_s,85);
+ 
           
          
          
@@ -116,13 +266,19 @@ void right_or_left()
           
         
         myservo.write(0);
-         analogWrite(motor_s,100);
+         analogWrite(motor_s,85);
 
-        delay(1500);
+        wait=millis();
+        while(millis()-wait<=1500)
+        {
+          forward = get_destance(trig_f, echo_f);
+          if(forward>120)
+          {
+            break;
+          }
+        }
         
         myservo.write(38);
-        delay(400);
-        analogWrite(motor_s,85);
         
         
        
@@ -155,13 +311,19 @@ void right_or_left()
       }
 
         myservo.write(90);
-        analogWrite(motor_s,100);
+        analogWrite(motor_s,85);
 
-        delay(1500);
+        wait=millis();
+        while(millis()-wait<=1500)
+        {
+          forward = get_destance(trig_f, echo_f);
+          if(forward>130)
+          {
+            break;
+          }
+        }
         
         myservo.write(38);
-        delay(400);
-        analogWrite(motor_s,85);
         
 
 
@@ -169,14 +331,12 @@ void right_or_left()
 
       }
 
-
+      counter_rotate++;
 
     }
   
-    counter_rotate += 1;
+    
   }
-
-
 
 
 
@@ -188,7 +348,7 @@ void setup() {
   pinMode(motor_f, OUTPUT);
   pinMode(motor_b, OUTPUT);
   pinMode(motor_s, OUTPUT);
-  analogWrite(motor_s, 90);
+  analogWrite(motor_s, 100);
   myservo.attach(servo);
   myservo.write(38);
 
@@ -201,6 +361,9 @@ void setup() {
   pinMode(trig_b, OUTPUT);
   pinMode(echo_b, INPUT);
   pinMode(start_Stop, INPUT_PULLUP);
+  pinMode( ir_right,INPUT);
+  pinMode(ir_left,INPUT);
+
   Serial.begin(9600);
  
 
@@ -208,16 +371,12 @@ void setup() {
 
 
 void loop() {
-
+ 
   if (digitalRead(start_Stop) == 0)
 
   { if (counter_rotate < 12)
     {
-      if (c==0){
-           right1= get_destance(trig_r, echo_r);
-            left1 = get_destance(trig_l, echo_l);
-            c+=1;
-      }
+     
       digitalWrite(motor_f,HIGH);
      right_or_left();
      Correct_path();
